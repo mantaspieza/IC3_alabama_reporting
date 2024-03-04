@@ -86,7 +86,7 @@ class DataExtractor(Scraper):
 
         self.organized_list = self.remove_special_characters(organized_list)
 
-    def extract_all_raw_table_data(self) -> ResultSet:
+    def extract_all_raw_table_data(self) -> None:
 
         soup = self.get_page_response()
         self.page_table_raw_data = soup.findAll("article")
