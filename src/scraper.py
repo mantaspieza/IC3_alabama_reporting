@@ -86,15 +86,17 @@ class DataExtractor(Scraper):
 
         self.organized_list = self.remove_special_characters(organized_list)
 
-    def extract_all_raw_table_data(self) -> None:
+    def extract_single_page_info(self) -> None:
 
         soup = self.get_page_response()
         self.page_table_raw_data = soup.findAll("article")
         self.get_state_name(soup)
         
 
-    def save_raw_data(self) -> None:
-        path = f"data/{self.year}/{self.state_name}"
+    def save_extracted_page_data(self) -> None:
+
+        path = f"data/staging/{self.year}/{self.state_name}"
+
         table_name = f'ic3__{self.table_name.lower().replace(' ','_')}'
         if not os.path.isdir(path):
             os.makedirs(path)
@@ -102,9 +104,9 @@ class DataExtractor(Scraper):
         pd.DataFrame(data=self.organized_list, columns=list(self.columns)).to_json(f"{path}/{str(table_name)}.json"
         )
 
-    def load_page_data_to_bronze(self):
+    def load_page_to_staging(self):
 
-        self.extract_all_raw_table_data()
+        self.extract_single_page_info()
 
         for iteration in range(len(self.page_table_raw_data)):
             self.get_table_name(iteration=iteration)
@@ -116,7 +118,7 @@ class DataExtractor(Scraper):
 
             self.arrange_columns()
 
-            self.save_raw_data()
+            self.save_extracted_page_data()
             
 
 
@@ -124,4 +126,4 @@ if __name__ == "__main__":
     pass
     scrp = DataExtractor(year=2022, state_code=44)
 
-    scrp.load_page_data_to_bronze()
+    scrp.load_page_to_staging()
