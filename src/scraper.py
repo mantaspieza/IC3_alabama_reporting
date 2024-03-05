@@ -1,7 +1,7 @@
 import os
-import requests
 import pandas as pd
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from collections import OrderedDict
 from bs4 import BeautifulSoup, ResultSet
 import time
@@ -15,15 +15,21 @@ class Scraper:
         self.url = url
 
     def get_page_response(self) -> BeautifulSoup:
-        driver = webdriver.Chrome()
+        
+        options = Options()
+        options.add_argument('--headless=new')
+        driver = webdriver.Chrome(options=options)
+         
+        
         try:
             driver.get(self.url)
             content = driver.page_source
             soup = BeautifulSoup(content, "html.parser")
             driver.close()
-            return soup
         except:
             raise ConnectionError("Check the connection")
+        else:
+            return soup
 
 
 class DataExtractor(Scraper):
@@ -37,9 +43,11 @@ class DataExtractor(Scraper):
         self.url = f"https://www.ic3.gov/Media/PDF/AnnualReport/{str(self.year)}State/StateReport.aspx#?s={str(self.state_code)}"
         self.page_table_raw_data = None
         self.table_name = None
+        self.list_of_tables = []
 
     def get_table_name(self, iteration) -> None:
         self.table_name = self.page_table_raw_data[iteration].find("caption").text
+
 
     def get_state_name(self, soup: ResultSet) -> None:
         state_list = soup.findAll("option")
@@ -86,28 +94,53 @@ class DataExtractor(Scraper):
 
         self.organized_list = self.remove_special_characters(organized_list)
 
-    def extract_all_raw_table_data(self) -> None:
+    def extract_single_page_info(self) -> None:
 
         soup = self.get_page_response()
-        self.page_table_raw_data = soup.findAll("article")
         self.get_state_name(soup)
+        # self.get_states_info(soup)
+        # self.state_name = self.all_states[self.state_code].replace(" ", "_")
+
+        self.page_table_raw_data = soup.findAll("article")
+        
         
 
-    def save_raw_data(self) -> None:
-        path = f"data/{self.year}/{self.state_name}"
+    def save_extracted_page_data(self) -> None:
+
+        path = f"./data/staging/{self.year}/{self.state_name}"
+
         table_name = f'ic3__{self.table_name.lower().replace(' ','_')}'
         if not os.path.isdir(path):
             os.makedirs(path)
 
+    
         pd.DataFrame(data=self.organized_list, columns=list(self.columns)).to_json(f"{path}/{str(table_name)}.json"
         )
 
-    def load_page_data_to_bronze(self):
+    # def extract_state_index_json(self):
+    #     self.get_states_info(soup=self.get_page_response())
 
-        self.extract_all_raw_table_data()
+    #     save_path = f"./documentation/misc/"
+    #     file_name = 'state_index.json'
 
+    #     if not os.path.isdir(save_path):
+    #         os.makedirs(save_path)
+
+    #     with open(f'{save_path}{file_name}','w') as f:
+    #         json.dump(self.all_states, f, ensure_ascii=False)
+
+
+    def load_page_to_staging(self):
+
+        self.extract_single_page_info()
+
+        
         for iteration in range(len(self.page_table_raw_data)):
+
+            
             self.get_table_name(iteration=iteration)
+            self.list_of_tables.append(self.table_name)
+
             self.get_col_names(iteration=iteration)
 
             self.extract_table_data(iteration=iteration)
@@ -116,12 +149,10 @@ class DataExtractor(Scraper):
 
             self.arrange_columns()
 
-            self.save_raw_data()
-            
+            self.save_extracted_page_data()
 
+# if __name__ == '__main__':
 
-if __name__ == "__main__":
-    pass
-    scrp = DataExtractor(year=2022, state_code=44)
-
-    scrp.load_page_data_to_bronze()
+#     b = DataExtractor(2022,11)
+#     b.extract_state_index_json()
+        
