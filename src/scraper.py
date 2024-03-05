@@ -82,6 +82,12 @@ class DataExtractor(Scraper):
             list_[-1] = list_[-1].lstrip('$').replace(',','')
         return organized_list
     
+    def remove_commas_in_age_grouping(self,organized_list:list) -> list:
+        for list_ in organized_list:
+            list_[-2] = list_[-2].replace(',','')
+        
+        return organized_list
+    
     def arrange_columns(self):
         organized_list = []
         start = 0
@@ -93,6 +99,10 @@ class DataExtractor(Scraper):
                 organized_list.append(item[i : i + column_number])
 
         self.organized_list = self.remove_special_characters(organized_list)
+
+        if column_number == 3:
+            self.organized_list = self.remove_commas_in_age_grouping(self.organized_list)
+
 
     def extract_single_page_info(self) -> None:
 

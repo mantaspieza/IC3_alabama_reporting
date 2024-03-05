@@ -11,8 +11,7 @@ class ProcessOrchestrator:
     def __init__(
         self,
         index_range: Set[int] = {i for i in range(1, 58)},
-        # year_range: Set[int] = {i for i in range(2016, 2023)},
-        year_range: Set[int] = {2022},
+        year_range: Set[int] = {i for i in range(2016, 2023)},
     ) -> None:
 
         self.index_range = index_range
@@ -28,11 +27,26 @@ class ProcessOrchestrator:
         DataLoader(year=year, state_name=self.state_name).transform_tables_in_folder()
 
     def get_all_data(self):
+        if len(self.year_range) > 1 and len(self.index_range) > 1:
+            for year in self.year_range:
+                with alive_bar(57) as bar:
+                    for state in self.index_range:
 
-        for year in self.year_range:
-            with alive_bar(57) as bar:
-                for state in self.index_range:
+                        self.get_single_state_data(year=year, state_code=state)
+                        sleep(1)
+                        bar()
 
-                    self.get_single_state_data(year=year, state_code=state)
-                    sleep(1)
-                    bar()
+        elif len(self.year_range) == 1 and len(self.index_range) > 1:
+
+            for state in self.index_range:
+                self.get_single_state_data(
+                    year=list(self.year_range)[0], state_code=state
+                )
+                sleep(1)
+
+        elif len(self.year_range) > 1 and len(self.index_range) == 1:
+            for year in self.year_range:
+                self.get_single_state_data(
+                    year=year, state_code=list(self.index_range)[0]
+                )
+                sleep(1)
