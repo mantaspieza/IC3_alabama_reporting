@@ -17,6 +17,52 @@ class ProcessOrchestrator:
         self.index_range = index_range
         self.year_range = year_range
 
+    @property
+    def index_range(self):
+        return self._index_range
+
+    @index_range.setter
+    def index_range(self, value):
+        if not isinstance(value, set):
+            raise Exception(
+                TypeError(
+                    "index_range should be presented as a set of integers (Set[int])"
+                )
+            )
+        for i in value:
+            if not isinstance(i, int):
+                raise Exception(
+                    "values within index_range set is expected to be integers"
+                )
+
+        if min(value) < 1 or max(value) > 57:
+            raise Exception(ValueError("State index values from 1 to 57 are accepted"))
+
+        self._index_range = value
+
+    @property
+    def year_range(self):
+        return self._year_range
+
+    @year_range.setter
+    def year_range(self, value):
+        if not isinstance(value, set):
+            raise Exception(
+                TypeError(
+                    "year_range should be presented as a set of integers (Set[int])"
+                )
+            )
+        for i in value:
+            if not isinstance(i, int):
+                raise Exception(
+                    "values within year_range set is expected to be integers"
+                )
+
+        if min(value) < 2016 or max(value) > 2022:
+            raise Exception(ValueError("year values from 2016 to 2022 are accepted"))
+
+        self._year_range = value
+
     def get_single_state_data(self, year: int, state_code: int) -> None:
 
         state_info = DataExtractor(year=year, state_code=state_code)

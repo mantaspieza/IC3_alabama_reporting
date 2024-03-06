@@ -9,13 +9,10 @@ class DataLoader:
 
     def __init__(
         self,
-        # year_range: Set[int],
-        # index_range: Set[int],
         year: int = None,
-        state_name: int = None,
+        state_name: str = None,
     ) -> None:
-        # self.year_range = year_range
-        # self.index_range = index_range
+
         self.year = year
         self.state_name = state_name
         self.staging_path = f"data/staging/{str(year)}/{str(state_name)}/"
