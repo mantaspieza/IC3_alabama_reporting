@@ -13,7 +13,17 @@ class Scraper:
         url: str = "https://www.ic3.gov/Media/PDF/AnnualReport/2016State/StateReport.aspx#?s=1",
     ) -> None:
         self.url = url
-
+        
+    @property
+    def url(self):
+        return self._url
+    
+    @url.setter
+    def url(self,value):
+        if not isinstance(str,value):
+            raise Exception(TypeError('URL input should be a string'))
+        return self._url
+    
     def get_page_response(self) -> BeautifulSoup:
         
         options = Options()
@@ -108,8 +118,6 @@ class DataExtractor(Scraper):
 
         soup = self.get_page_response()
         self.get_state_name(soup)
-        # self.get_states_info(soup)
-        # self.state_name = self.all_states[self.state_code].replace(" ", "_")
 
         self.page_table_raw_data = soup.findAll("article")
         
@@ -126,18 +134,6 @@ class DataExtractor(Scraper):
     
         pd.DataFrame(data=self.organized_list, columns=list(self.columns)).to_json(f"{path}/{str(table_name)}.json"
         )
-
-    # def extract_state_index_json(self):
-    #     self.get_states_info(soup=self.get_page_response())
-
-    #     save_path = f"./documentation/misc/"
-    #     file_name = 'state_index.json'
-
-    #     if not os.path.isdir(save_path):
-    #         os.makedirs(save_path)
-
-    #     with open(f'{save_path}{file_name}','w') as f:
-    #         json.dump(self.all_states, f, ensure_ascii=False)
 
 
     def load_page_to_staging(self):
@@ -161,8 +157,3 @@ class DataExtractor(Scraper):
 
             self.save_extracted_page_data()
 
-# if __name__ == '__main__':
-
-#     b = DataExtractor(2022,11)
-#     b.extract_state_index_json()
-        
