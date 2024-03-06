@@ -132,6 +132,7 @@ class ProcessOrchestrator:
                     year=list(self.year_range)[0], state_code=state
                 )
                 sleep(1)
+            print("load completed")
 
         elif len(self.year_range) > 1 and len(self.index_range) == 1:
             for year in self.year_range:
@@ -139,3 +140,4 @@ class ProcessOrchestrator:
                     year=year, state_code=list(self.index_range)[0]
                 )
                 sleep(1)
+            print("load completed")

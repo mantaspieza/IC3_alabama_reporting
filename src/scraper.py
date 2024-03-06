@@ -22,28 +22,6 @@ class Scraper:
             url (str): URL to ic3 gov site. Defaults to "https://www.ic3.gov/Media/PDF/AnnualReport/2016State/StateReport.aspx#?s=1".
         """
         self.url = url
-        
-    @property
-    def url(self):
-        return self._url
-    
-    @url.setter
-    def url(self,value:str) -> str:
-        """
-        url property setter checking if provided value is a string.
-
-        Args:
-            value (str): url to ic3 webpage.
-
-        Raises:
-            Exception: checks if the provided value is a string.
-
-        Returns:
-            str: url to the webpage.
-        """
-        if not isinstance(str,value):
-            raise Exception(TypeError('URL input should be a string'))
-        return self._url
     
     def get_page_response(self) -> ResultSet:
         """
