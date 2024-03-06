@@ -5,7 +5,7 @@ This solution extracts 5 table data provided at the [official IC3 webpage](https
 
 ### How to use:
 1. Clone repository to your location.
-2. activate virtual environment. [Documentation to Howto](https://python.land/virtual-environments/virtualenv)
+2. activate virtual environment. [Documentation on Howto](https://python.land/virtual-environments/virtualenv)
 3. open terminal and install requirements.txt  
 `pip install -r requirements.txt`
 
@@ -26,3 +26,4 @@ in terminal write :
 
     to initiate data extraction for the values presented above:  
     `ProcessOrchestrator(index_range={1,12,44}, year_range={2016}).get_all_data()`
+
